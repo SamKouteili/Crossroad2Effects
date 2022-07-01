@@ -4,6 +4,18 @@ import scipy.signal as signal
 from pedalboard import Pedalboard, Chorus, Reverb, Mix, Chain, Gain, Plugin
 from pedalboard.io import AudioFile
 
+
+PLUGINS = [Reverb(), Chorus(), Gain()]
+
+# as cannot deepcopy
+def copyPlg(plg : Plugin ) -> Plugin :
+    if isinstance(plg, Gain) :
+        return Gain()
+    elif isinstance(plg, Reverb) :
+        return Reverb()
+    elif isinstance(plg, Chorus) :
+        return Chorus()
+
 def get_plg_args(plg : Plugin) -> dict :
     d = {}
     l = str(plg).split()[1:-2]
@@ -11,6 +23,45 @@ def get_plg_args(plg : Plugin) -> dict :
         li = i.split("=")
         d[li[0]] = float(li[1])
     return d
+
+
+def simplify_chain(chn : Chain) -> Chain :
+    
+    ctr = 1
+
+    def rmv(nxt, ctr) :
+        chn.remove(nxt)
+        ctr -= 1
+    
+    def sim(a, b) :
+        return abs(a, b) <= 0.02
+ 
+    while ctr < len(chn) :
+
+        cur, nxt = chn[ctr-1], chn[ctr]
+
+        # if isinstance(cur, Mix) :
+            # mixes = [m for m in cur if isinstance(m, Mix)]
+
+        if type(cur) == type(nxt) :
+
+            if isinstance(cur, Gain) :
+                cur.gain_db = cur.gain_db + nxt.gain_db
+                rmv(nxt, ctr)
+
+            if isinstance(cur, Chorus) :
+                if sim(cur.mix, nxt.mix) :
+                    cur.mix = cur.mix + nxt.mix
+                    rmv(nxt, ctr)
+            
+            if isinstance(cur, Reverb) :
+                if sim(cur.mix, nxt.mix) and sim(cur.width, nxt.width) :
+                    cur.wet_level = cur.wet_level + nxt.wet_level
+                    rmv(nxt, ctr)         
+                
+        ctr += 1
+    
+    return chn
 
 
 def calc_error(des_wav : np.ndarray, out_wav : np.ndarray, fs=2048) -> int:
@@ -34,4 +85,6 @@ def calc_error(des_wav : np.ndarray, out_wav : np.ndarray, fs=2048) -> int:
     freq_err = np.mean(np.abs(Z_des - Z_out), axis=None)
 
     return mean_square_error + freq_err
+
+
 

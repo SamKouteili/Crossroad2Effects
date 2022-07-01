@@ -1,11 +1,16 @@
-from pedalboard import Pedalboard, Plugin, Chorus, Reverb, Mix, Chain
+from pedalboard import Pedalboard, Plugin, Chain, Mix, Gain, Chorus, Reverb
 
-def faust_block(plg : Plugin) -> str :
-    return "Node"
+def faust_str_block(plg : Plugin) -> str :
+    if isinstance(plg, Gain) :
+        return "GAIN"
+    elif isinstance(plg, Reverb) :
+        return "REVERB"
+    elif isinstance(plg, Chorus) :
+        return "CHORUS"
 
 def faustify(board : Pedalboard) -> str :
         
-    if board == [] :
+    if list(board) == [] :
         return ""
     
     (hd, *tl), acc = board, ""
@@ -13,8 +18,8 @@ def faustify(board : Pedalboard) -> str :
     if isinstance(hd, Chain) :
         acc = '(' + faustify(hd) + ')'
         if tl != [] :
-            o = "<: " if isinstance(tl[0], Mix) else ": "
-            acc += + o
+            o = " <: " if isinstance(tl[0], Mix) else " : "
+            acc += o
     
     elif isinstance(hd, Mix) :
         for fx in hd :
@@ -23,11 +28,19 @@ def faustify(board : Pedalboard) -> str :
                 inn = "_ <: " + inn
             acc += '(' + inn + '), '
         
+        if tl != [] :
+            o = " :> " if not isinstance(tl[0], Mix) else \
+             (" <: " if len(hd) < len(tl[0]) else " :> " )
+        else :
+            o = ":> _"
         
-        acc = acc[:-2] + " :> _"
+        acc = acc[:-2] + o
+        
+        print(f"ACC: {acc}, \n     ACC[-2]:{acc[-2:]}")
     
-    elif isinstance(hd, Chorus) or isinstance(hd, Reverb):
-        plg = faust_block(hd)
+    # elif isinstance(hd, Chorus) or isinstance(hd, Reverb) :
+    else :
+        plg = faust_str_block(hd)
         if tl != [] :
             o = " <: " if isinstance(tl[0], Mix) else " : "
             acc = plg + o
