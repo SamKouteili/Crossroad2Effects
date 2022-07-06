@@ -1,8 +1,31 @@
 import numpy as np
-from pedalboard import Pedalboard, Chorus, Reverb, Mix, Chain, Gain, Plugin
-from pedalboard.io import AudioFile
+from scipy.signal import stft
 from scipy.optimize import minimize
-from plgUtil import *
+from pedalboard import Pedalboard, Plugin
+from plgUtil import get_plg_args
+
+def calc_error(arr1 : np.ndarray, arr2 : np.ndarray, fs=2048) -> int:
+    """
+    oc: @jatinchowdhury18
+    Calculate the error between two wav files,
+    using a combination  of mean-squared error
+    and spectrogram loss
+    """
+    mean_square_error = np.mean((arr1 - arr2)**2, axis=None) # get mse
+
+    nseg = 2048 # hop size
+
+    # sum to mono (maybe do stereo eventually...)
+    des = (arr1[:,0] + arr1[:,1]) / 2
+    out = (arr2[:,0] + arr2[:,1]) / 2
+
+    # compute spectrogram error
+    _, _, Z_des = stft(des, fs=fs, nperseg=nseg, nfft=nseg*2)
+    _, _, Z_out = stft(out, fs=fs, nperseg=nseg, nfft=nseg*2)
+    freq_err = np.mean(np.abs(Z_des - Z_out), axis=None)
+
+    return mean_square_error + freq_err
+
 
 def get_param_error(argvals, argkeys, plg, board, input_buf, target_buf, samplerate) :
     """
@@ -14,6 +37,7 @@ def get_param_error(argvals, argkeys, plg, board, input_buf, target_buf, sampler
     effected = board(input_buf, samplerate)
     
     return calc_error(effected, target_buf)
+
 
 def optimize_plg_params(plg : Plugin, board : Pedalboard, input_buf, target_buf, samplerate, tol=1.0e-5) :
     """

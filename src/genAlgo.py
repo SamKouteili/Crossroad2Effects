@@ -1,15 +1,98 @@
+import time as ti
 import numpy as np
-from pedalboard import Pedalboard, Chorus, Reverb, Mix, Chain, Gain, Plugin
-from pedalboard.io import AudioFile
+import random as rd
+from pedalboard import Pedalboard, Plugin, Chain, Mix, Gain, Chorus, Reverb
 from plgUtil import *
-from paramOptim import optimize_plg_params
-from faustify import faustify
-import typing
-from random import choice, randint
+from paramOptim import *
+
+P_MUTATION = 0.6
+
+
+def evolve(dry, wet, sr) :
+
+    tol=1.0e-5
+
+    N_pop = 12
+    N_gens = 20
+    N_survive = 10
+
+    # models all held here
+    models = [Pedalboard([])]
+
+    # create initial population
+    for plg in PLUGINS : 
+        models += Pedalboard([copyPlg(plg)])
+
+    models = generation(models, N_pop, N_survive)
+
+    gen_num = 0
+    converge = False
+    elapsed = ti.time()
+
+
+    while gen_num < N_gens :
+
+        errors = [calc_error(model(dry, sr), wet) for model in models]
+        aridxs = np.argsort(errors)[:N_pop]
+        errors = [errors[i] for i in aridxs]
+        models = [models[i] for i in aridxs]
+
+        if errors[0] <= tol :
+            converge = True
+            break
+            
+        if N_pop < 48:
+            N_pop += 4
+
+        models = generation(models, N_pop, N_survive)
+    
+    conv = "converged" if converge else "did not converge"
+    print(f"The model {conv}!")
+    print(f"Best Model: {models[0]} \nError: {models[0]}")
+
+    return models[0]
+
+
+
+
+def generation(models, N, N_survive):
+    """
+    oc: @jatinchowdhury18    
+    create a generation of models from first two in existing list
+    """
+    while len(models) < N:
+        parent1 = rd.choice(models[:N_survive])
+        parent2 = rd.choice(models[:N_survive])
+        models += child(parent1, parent2)
+
+        # check for duplicates
+        for model in models[:-1]:
+            if model == models[:-1] :
+                # print('Duplicate detected! Mutating again...')
+                models.pop()
+                break
+
+    return models
+
+
+def child(parent1, parent2) :
+    mutation = (rd.random() <= P_MUTATION)
+    print(f"Parent1: {parent1}   ||  Parent2: {parent2}")
+    parents = [parent1, parent2]
+    rd.shuffle(parents)
+    print(f"Parents: {parents}")
+    if mutation : 
+        print(f"Mutating!!")
+        return mutate(parents[0])
+    else : 
+        print(f"Concatenating parents in srs/prl")
+        return rd.choice([addSeries, addParallel])(parents[0], parents[1])
 
 
 def mutate(board : Pedalboard) :
-
+    """
+    Add a plugin at a rd.random point in a Pedalboard
+    """
     def chain_opt(elem) :
         return elem if isinstance(elem, Chain) else Chain([elem])
 
@@ -17,79 +100,15 @@ def mutate(board : Pedalboard) :
     def addAsMix(board, id, plg) :
         board[id] = Mix([chain_opt(board[id]), chain_opt(plg)])
     
-    r_id = randint(0, len(board)-1)
+    r_id = rd.randint(0, len(board)-1) if len(board) > 1 else 0
     curr = board[r_id]
 
     if isinstance(curr, Mix) : 
-        mutate(choice(curr))
+        mutate(rd.choice(curr))
     else : 
-        r_plg = copyPlg(choice(PLUGINS))
-        choice([Pedalboard.insert, addAsMix])(board, r_id, Chain([r_plg])) 
-
-def rmv(board, elem, ctr) :
-    board.remove(elem)
-    ctr -= 1
-    
-def sim(a, b) :
-    return abs(a - b) <= 0.02
-
-def simplify_chain(chain : Chain) :
-    
-    ctr = 1
- 
-    while ctr < len(chain) :
-
-        if type(chain[ctr-1]) == type(chain[ctr]) :
-
-            if isinstance(chain[ctr-1], Gain) :
-                chain[ctr-1].gain_db = chain[ctr-1].gain_db + chain[ctr].gain_db
-                rmv(chain, chain[ctr], ctr)
-
-            if isinstance(chain[ctr-1], Chorus) :
-                if sim(chain[ctr-1].mix, chain[ctr].mix) :
-                    chain[ctr-1].mix = chain[ctr-1].mix + chain[ctr].mix
-                    rmv(chain, chain[ctr], ctr)
-            
-            if isinstance(chain[ctr-1], Reverb) :
-                if sim(chain[ctr-1].wet_level, chain[ctr].wet_level) and \
-                     sim(chain[ctr-1].width, chain[ctr].width) :
-                    chain[ctr-1].wet_level = chain[ctr-1].wet_level + chain[ctr].wet_level
-                    rmv(chain, chain[ctr], ctr)         
-                
-        ctr += 1
+        r_plg = copyPlg(rd.choice(PLUGINS))
+        rd.choice([Pedalboard.insert, addAsMix])(board, r_id, Chain([r_plg]))
+        print(f"Board after mutation: \n{board}")
+        return board
 
 
-def flatten_chain(chain : Chain) -> list :
-
-    if list(chain) == [] : return []
-
-    hd, *tl = chain
-    app = flatten_chain(hd) if isinstance(hd, Chain) else [hd]
-    return app + flatten_chain(tl)
-
-def simplify_board(board : Pedalboard) :
-   
-    ctr = 1
- 
-    while ctr < len(board) :
-    
-        if isinstance(board[ctr-1], Chain) :
-
-            board[ctr-1] = Chain(flatten_chain(board[ctr-1]))
-            simplify_chain(board[ctr-1])
-
-            if isinstance(board[ctr], Chain) :
-
-                board[ctr] = Chain(flatten_chain(board[ctr]))
-                simplify_chain(board[ctr])
-
-                board[ctr-1] = Chain(list(board[ctr-1]) + list(board[ctr]))
-                rmv(board, board[ctr], ctr)
-            
-            if len(board[ctr-1]) == 0 :
-                rmv(board, board[ctr-1], ctr)
-            elif len(board[ctr-1]) == 1 :
-                if isinstance(board[ctr-1][0], Mix) :
-                    board[ctr-1] = board[ctr-1][0]
-                
-        ctr += 1  

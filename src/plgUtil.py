@@ -1,13 +1,9 @@
-import numpy as np
-import scipy.signal as signal
-# import matplotlib.pyplot as plt
-from pedalboard import Pedalboard, Chorus, Reverb, Mix, Chain, Gain, Plugin
-from pedalboard.io import AudioFile
+from pedalboard import Pedalboard, Plugin, Chain, Mix, Gain, Chorus, Reverb
 
 
 PLUGINS = [Reverb(), Chorus(), Gain()]
 
-# as cannot deepcopy
+
 def copyPlg(plg : Plugin ) -> Plugin :
     if isinstance(plg, Gain) :
         return Gain()
@@ -24,67 +20,82 @@ def get_plg_args(plg : Plugin) -> dict :
         d[li[0]] = float(li[1])
     return d
 
+def addSeries(board1, board2) :
+    return Pedalboard(list(board1) + list(board2))
 
-def simplify_chain(chn : Chain) -> Chain :
+def addParallel(board1, board2) :
+    return Pedalboard([Mix([Chain(list(board1)), Chain(list(board2))])])
+
+def rmv(board, elem, ctr) :
+    board.remove(elem)
+    ctr -= 1
     
+
+def simplify_chain(chain : Chain) :
+    """
+    Simplify plugin chain by combining effect instances
+    """
     ctr = 1
-
-    def rmv(nxt, ctr) :
-        chn.remove(nxt)
-        ctr -= 1
-    
-    def sim(a, b) :
-        return abs(a, b) <= 0.02
  
-    while ctr < len(chn) :
-
-        cur, nxt = chn[ctr-1], chn[ctr]
-
-        # if isinstance(cur, Mix) :
-            # mixes = [m for m in cur if isinstance(m, Mix)]
+    while ctr < len(chain) :
+        
+        cur = chain[ctr-1]
+        nxt = chain[ctr]
 
         if type(cur) == type(nxt) :
-
+            
             if isinstance(cur, Gain) :
                 cur.gain_db = cur.gain_db + nxt.gain_db
-                rmv(nxt, ctr)
+                rmv(chain, nxt, ctr)
 
             if isinstance(cur, Chorus) :
-                if sim(cur.mix, nxt.mix) :
+                if abs(cur.mix - nxt.mix) <= 0.005 :
                     cur.mix = cur.mix + nxt.mix
-                    rmv(nxt, ctr)
+                    rmv(chain, nxt, ctr)
             
             if isinstance(cur, Reverb) :
-                if sim(cur.mix, nxt.mix) and sim(cur.width, nxt.width) :
+                if abs(cur.wet_level - nxt.wet_level) <= 0.005 and \
+                     abs(cur.width - nxt.width) <= 0.005 :
                     cur.wet_level = cur.wet_level + nxt.wet_level
-                    rmv(nxt, ctr)         
+                    rmv(chain, nxt, ctr)         
                 
         ctr += 1
+
+def flatten_chain(chain : Chain) -> list[Plugin] :
+    """
+    Flatten plugin chain by raising Chain constructors up
+    """
+    if list(chain) == [] : return []
+
+    hd, *tl = chain
+    app = flatten_chain(hd) if isinstance(hd, Chain) else [hd]
+    return app + flatten_chain(tl)
+
+def simplify_board(board : Pedalboard) :
+    """
+    Simplify Pedalboard by simplifying and concatenating chains
+    """
+    ctr = 1
+ 
+    while ctr < len(board) :
     
-    return chn
+        if isinstance(board[ctr-1], Chain) :
 
+            board[ctr-1] = Chain(flatten_chain(board[ctr-1]))
+            simplify_chain(board[ctr-1])
 
-def calc_error(des_wav : np.ndarray, out_wav : np.ndarray, fs=2048) -> int:
-    """
-    oc: @jatinchowdhury18
-    Calculate the error between two wav files,
-    using a combination  of mean-squared error
-    and spectrogram loss
-    """
-    mean_square_error = np.mean((des_wav - out_wav)**2, axis=None) # get mse
+            if isinstance(board[ctr], Chain) :
 
-    nseg = 2048 # hop size
+                board[ctr] = Chain(flatten_chain(board[ctr]))
+                simplify_chain(board[ctr])
 
-    # sum to mono (maybe do stereo eventually...)
-    des = (des_wav[:,0] + des_wav[:,1]) / 2
-    out = (out_wav[:,0] + out_wav[:,1]) / 2
-
-    # compute spectrogram error
-    _, _, Z_des = signal.stft(des, fs=fs, nperseg=nseg, nfft=nseg*2)
-    _, _, Z_out = signal.stft(out, fs=fs, nperseg=nseg, nfft=nseg*2)
-    freq_err = np.mean(np.abs(Z_des - Z_out), axis=None)
-
-    return mean_square_error + freq_err
-
-
-
+                board[ctr-1] = Chain(list(board[ctr-1]) + list(board[ctr]))
+                rmv(board, board[ctr], ctr)
+            
+            if len(board[ctr-1]) == 0 :
+                rmv(board, board[ctr-1], ctr)
+            elif len(board[ctr-1]) == 1 :
+                if isinstance(board[ctr-1][0], Mix) :
+                    board[ctr-1] = board[ctr-1][0]
+                
+        ctr += 1  

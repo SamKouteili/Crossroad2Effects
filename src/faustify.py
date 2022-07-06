@@ -35,8 +35,6 @@ def faustify(board : Pedalboard) -> str :
             o = ":> _"
         
         acc = acc[:-2] + o
-        
-        print(f"ACC: {acc}, \n     ACC[-2]:{acc[-2:]}")
     
     # elif isinstance(hd, Chorus) or isinstance(hd, Reverb) :
     else :
