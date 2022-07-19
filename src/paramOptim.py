@@ -1,7 +1,7 @@
 import numpy as np
+from pedalboard import Pedalboard, Plugin, Chain, Mix
 from scipy.signal import stft
 from scipy.optimize import minimize
-from pedalboard import Pedalboard, Plugin
 from plgUtil import get_plg_args
 
 def calc_error(arr1 : np.ndarray, arr2 : np.ndarray, fs=2048) -> int:
@@ -57,3 +57,15 @@ def optimize_plg_params(plg : Plugin, board : Pedalboard, input_buf, target_buf,
     for i in range(len(argkeys)) : setattr(plg, argkeys[i], result.x[i])
     
     return board
+
+def optimize_board(board : Pedalboard, input_buf, target_buf, samplerate, tol=1.0e-5) :
+    """
+    Optimize the variables of all plugins in a Pedalboard
+    """
+    for plg in list(board) :
+        if isinstance(plg, Mix) or isinstance(plg, Chain) :
+            optimize_board(plg, input_buf, target_buf, samplerate)
+        else :
+            optimize_plg_params(plg, board, input_buf, target_buf, samplerate)
+    return board
+

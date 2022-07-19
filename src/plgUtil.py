@@ -4,15 +4,10 @@ from pedalboard import Pedalboard, Plugin, Chain, Mix, Gain, Chorus, Reverb
 PLUGINS = [Reverb(), Chorus(), Gain()]
 
 
-def copyPlg(plg : Plugin ) -> Plugin :
-    if isinstance(plg, Gain) :
-        return Gain()
-    elif isinstance(plg, Reverb) :
-        return Reverb()
-    elif isinstance(plg, Chorus) :
-        return Chorus()
-
 def get_plg_args(plg : Plugin) -> dict :
+    """
+    Retrieve argument dictionary of a Plugin
+    """
     d = {}
     l = str(plg).split()[1:-2]
     for i in l :
@@ -20,21 +15,45 @@ def get_plg_args(plg : Plugin) -> dict :
         d[li[0]] = float(li[1])
     return d
 
+
+def newPlg(plg : Plugin) -> Plugin :
+    """
+    New instance of a Plugin (as Pedalboard objects are not pickleable)
+    """
+    if isinstance(plg, Mix) :
+        return Mix([newPlg(_plg) for _plg in list(plg)])
+    elif isinstance(plg, Chain) :
+        return Chain([newPlg(_plg) for _plg in list(plg)])
+    elif isinstance(plg, Gain) :
+        return Gain()
+    elif isinstance(plg, Reverb) :
+        return Reverb()
+    elif isinstance(plg, Chorus) :
+        return Chorus()
+
+
+def newBoard(board : Pedalboard) -> Pedalboard :
+    """ New instance of a Pedalboard """
+    return Pedalboard([newPlg(plg) for plg in list(board)])
+    
+
 def addSeries(board1, board2) :
+    """ Chain two boards in series """
     return Pedalboard(list(board1) + list(board2))
 
 def addParallel(board1, board2) :
+    """ Chain two boards in parallel """
     return Pedalboard([Mix([Chain(list(board1)), Chain(list(board2))])])
-
-def rmv(board, elem, ctr) :
-    board.remove(elem)
-    ctr -= 1
     
 
 def simplify_chain(chain : Chain) :
     """
     Simplify plugin chain by combining effect instances
     """
+    def rmv(board, elem, ctr) :
+        board.remove(elem)
+        ctr -= 1    
+
     ctr = 1
  
     while ctr < len(chain) :
@@ -65,16 +84,21 @@ def flatten_chain(chain : Chain) -> list[Plugin] :
     """
     Flatten plugin chain by raising Chain constructors up
     """
+
     if list(chain) == [] : return []
 
     hd, *tl = chain
     app = flatten_chain(hd) if isinstance(hd, Chain) else [hd]
     return app + flatten_chain(tl)
 
+
 def simplify_board(board : Pedalboard) :
     """
     Simplify Pedalboard by simplifying and concatenating chains
     """
+    def rmv(board, elem, ctr) :
+        board.remove(elem)
+        ctr -= 1
     ctr = 1
  
     while ctr < len(board) :
