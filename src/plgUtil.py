@@ -15,6 +15,11 @@ def get_plg_args(plg : Plugin) -> dict :
         d[li[0]] = float(li[1])
     return d
 
+def gen_plg_dict() :
+    d = {}
+    for plg in PLUGINS : 
+        d[strPlg(plg)] = 0 
+    return d
 
 def newPlg(plg : Plugin) -> Plugin :
     """
@@ -39,6 +44,29 @@ def newPlg(plg : Plugin) -> Plugin :
         return HighpassFilter()
     elif isinstance(plg, LowpassFilter) :
         return LowpassFilter()
+
+def strPlg(plg : Plugin) -> Plugin :
+    """
+    String instance of Plugins
+    """
+    if isinstance(plg, Gain) :
+        return "Gain()"
+    elif isinstance(plg, Delay) :
+        return "Delay(mix=1)"
+    elif isinstance(plg, Limiter) :
+        return "Limiter()"
+    elif isinstance(plg, Compressor) :
+        return "Compressor()"
+    elif isinstance(plg, Reverb) :
+        return "Reverb()"
+    elif isinstance(plg, HighpassFilter) :
+        return "HighpassFilter()"
+    elif isinstance(plg, LowpassFilter) :
+        return "LowpassFilter()"
+    
+def codePlg(plg : Plugin) -> Plugin :
+    """ Function that generates concise ID for each plugin """
+    return str(plg)[len(str(plg))-6:-1]
 
 
 def newBoard(board : Pedalboard) -> Pedalboard :
