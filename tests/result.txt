@@ -1,4 +1,4 @@
-THE MODEL CONVERGED!
- Model: <Pedalboard with 2 plugins: [<pedalboard.Chain with 1 plugin: [<pedalboard.Chain with 1 plugin: [<pedalboard.Reverb room_size=0.560364 damping=0.633043 wet_level=0.228599 dry_level=0.180937 width=0.993301 freeze_mode=0.136155 at 0x55aeca662030>] at 0x55aec99b3eb0>] at 0x55aecb519340>, <pedalboard.Chain with 2 plugins: [<pedalboard.Chain with 1 plugin: [<pedalboard.Gain gain_db=0 at 0x55aeca0008d0>] at 0x55aec9d30420>, <pedalboard.Chain with 1 plugin: [<pedalboard.Chorus rate_hz=1 depth=0.251439 centre_delay_ms=7.00268 feedback=3.63741e-05 mix=0.499538 at 0x55aecb54c3c0>] at 0x55aec9c5b900>] at 0x55aec9c5b860>]>
- Error: 0.00017029490845743567
- Time: 22.988837957382202
+THE MODEL DID NOT CONVERGE!
+ Model: <Pedalboard with 1 plugin: [<pedalboard.Chain with 1 plugin: [<pedalboard.Lowpass cutoff_frequency_hz=50 at 0x55a3490c3c30>] at 0x55a349125040>]>
+ Error: 0.0008615197148174047
+ Time: 335.1863172054291

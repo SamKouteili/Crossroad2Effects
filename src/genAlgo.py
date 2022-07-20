@@ -1,103 +1,163 @@
-from pedalboard import Pedalboard, Plugin, Chain, Mix, Gain, Chorus, Reverb
+from pedalboard import Pedalboard, Plugin, Chain, Mix
 import time as ti
 import numpy as np
 import random as rd
 from plgUtil import *
 from paramOptim import *
 
-P_MUTATION = 0.4
-P_MERGE = 0.4
+P_MUTATION = 0.6
+P_MERGE = 0.5
 
+MAX_BOARD_SZ = 12
+
+N_POP = 32
+N_GEN = 400
+N_SURVIVE = 24
+
+TOL = 1.0e-5
 
 def evolve(dry, wet, sr) :
-
-    tol=1.0e-5
-
-    N_pop = 20
-    N_gens = 100
-    N_survive = 16
-
+    """ Primary genetic algorithm """
+    
     # initialize models
     models = [Pedalboard([Chain([newPlg(plg)])]) for plg in PLUGINS]
     
-    # do I want this here?
-    models = generation(models, N_pop, N_survive)
+    N_pop = N_POP
 
-    gen_num = 0
+    cur_gen = 0
     converge = False
+    weighted = False
     elapsed = ti.time()
+    best = None
+    
+    # do I want this here?
+    models = generation(models, wet, sr, weighted)
+    file = open("result.txt", "w")
 
     modf = open("models.txt", "w")
 
 
-    while gen_num < N_gens :
+    while cur_gen < N_GEN :
 
         models = [mod for mod in models if mod != None]
+        # models = [simplify_board(mod) for mod in models]
         errors = [calc_error(mod(dry, sr), wet) for mod in models]
         aridxs = np.argsort(errors)[:N_pop]
         errors = [errors[i] for i in aridxs]
         models = [models[i] for i in aridxs]
 
-        if errors[0] <= tol :
+        if errors[0] <= TOL :
             converge = True
             break
             
-        if N_pop < 72 :
+        if N_pop < 56 :
             N_pop += 4
+        
+        # reset search (second time weighted parent choice)
+        if cur_gen == N_GEN/2 :
 
-        if gen_num % 5 == 0 :
-            modf.write(f"GEN {gen_num} MODELS: \n   {models}\n\n")
+            best = [models[0], errors[0]]
 
-        models = generation(models, N_pop, N_survive)
+            weighted = not weighted
+            N_pop = N_POP
 
-        print(f"BEST MODEL THUS FAR ({gen_num})\n ERROR: {errors[0]}\n MODEL: {models[0]}")
+            models = [Pedalboard([Chain([newPlg(plg)])]) for plg in PLUGINS]
 
-        gen_num += 1
+            print(f"Resetting search with unweighted parent distributions...")
+            print(f" Best Model: {best[0]}\n Error: {best[1]}")
+
+        models = generation(models, wet, sr, weighted)
+
+        cur_gen += 1
+
+
+        if cur_gen % 10 == 0 :
+            modf.write(f"GEN {cur_gen} MODELS: \n   {models}\n\n")
+    
+        print(f"BEST MODEL THUS FAR ({cur_gen})\n ERROR: {errors[0]}\n MODEL: {models[0]}")
 
     
-    # Can move this inside the loop to do itertively; better results higher time ceiling
-    models[0] = optimize_board(models[0], dry, wet, sr)
-    errors[0] = calc_error(models[0](dry, sr), wet)
+    # # Can move this inside the loop to do itertively; better results higher time ceiling
+    # simplify_board(models[0])
+    # models[0] = optimize_board(models[0], dry, wet, sr)
+    # errors[0] = calc_error(models[0](dry, sr), wet)
 
-    file = open("result.txt", "w")
+    if errors[0] < best[1] :
+        best[0] = optimize_board(models[0], dry, wet, sr)
+        best[1] = errors[0]
+    else :
+        best[0] = optimize_board(best[0], dry, wet, sr)
+    simplify_board(best[0])
+
     conv = "CONVERGED" if converge else "DID NOT CONVERGE"
-    file.write(f"THE MODEL {conv}!")
-    file.write(f"Model: {models[0]} \nError: {models[0]}\n Time: {ti.time() - elapsed}")
+    file.write(f"THE MODEL {conv}!\n ")
+    file.write(f"Model: {best[0]}\n Error: {best[1]}\n Time: {ti.time() - elapsed}")
     file.close()
 
-    return models[0]
+    return best[0]
 
 
 
 
-def generation(models, N, N_survive):
+def generation(models, wet, sr, weighted):
     """ 
     create a generation of models from first two in existing list
     """
-    while len(models) < N:
+    while len(models) < N_POP:
 
         for model in models :
-            if model == None : models.remove(model)
+            if model == None : 
+                models.remove(model)
+            if board_plg_num(model) > MAX_BOARD_SZ and not weighted :
+                models.remove(model)
 
-        # NOTE: higher probability for closer averages. 
-        parents = [newBoard(rd.choice(models[:N_survive])) for _ in range(2)]
+        while True :
+            parents = choose_parents(models, weighted)
+            child = offspring(parents)
+            if child != None : break
+        models.append(child)
+        
         # print(f"PARENT IN MODEL: {parents[0] in models or parents[1] in models}")
         # print(f"MODELS (type={type(models)}): {models}\n")
         # print(f"    PARENTS: {parents}\n")
         # print(f"    CHILD (type={type(child(parents))}): {child(parents)}\n")
-        models += [child(parents)]
 
-        # check for duplicates
-        for model in models[:-1]:
-            if model == models[:-1] :
-                # print('Duplicate detected! Mutating again...')
+
+        # check for duplicates (more accurate to calc error, but creates large bottleneck)
+        for model in models[:-1]:   
+            same_model = calc_error(model(wet, sr), models[-1](wet, sr)) < TOL \
+                 if weighted else equal_boards(model, models[-1])
+            if same_model :
                 models.pop()
                 break
 
     return models
 
 
-def child(parents) :
+
+def choose_parents(models, weighted) :
+    """
+    Choose two parents with a linear probability scale (i.e. there is a linearly
+    higher probability to pick the parent with the best accuracy)
+    """
+    if weighted :
+        parents = []
+        for _ in range(2) :
+            idLin = rd.triangular(0, N_SURVIVE, 0)
+            # idUni = rd.randint(0, N_survive/4)
+            id = min(len(models)-1, int(idLin))
+            print(f"PARENT ID: {id} ")
+            parents.append(newBoard(models[id]))
+        return parents
+    else :
+        return [newBoard(rd.choice(models[:N_SURVIVE])) for _ in range(2)]
+    # idLin = [int(rd.triangular(0, N_survive/2, 0)) for _ in range(2)]
+    # idUni = [rd.randint(0, N_survive/2) for _ in range(2)]
+    # return [models[min(len(models)-1, idLin[i] + idUni[i])] for i in range(2)]
+    # return [newBoard(models[min(len(models)-1, i)]) for i in idx]
+
+
+def offspring(parents) :
     """
     Create a child from two parents by either concatenating them wholly, concatenating
     parts of each parent, or mutating one of the parents.

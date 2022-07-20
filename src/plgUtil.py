@@ -1,7 +1,7 @@
-from pedalboard import Pedalboard, Plugin, Chain, Mix, Gain, Chorus, Reverb
+from pedalboard import Pedalboard, Plugin, Chain, Mix, Gain, Delay, Limiter, Compressor, Reverb, HighpassFilter, LowpassFilter
 
-
-PLUGINS = [Reverb(), Chorus(), Gain()]
+# List of plugin blocks considered by the genetic algorithm. Add user defined plugins here
+PLUGINS = [Gain(), Delay(), Limiter(), Compressor(), Reverb(), HighpassFilter(), LowpassFilter()]
 
 
 def get_plg_args(plg : Plugin) -> dict :
@@ -19,6 +19,7 @@ def get_plg_args(plg : Plugin) -> dict :
 def newPlg(plg : Plugin) -> Plugin :
     """
     New instance of a Plugin (as Pedalboard objects are not pickleable)
+    {Note: user defined plugins need to be instantiated here as well}
     """
     if isinstance(plg, Mix) :
         return Mix([newPlg(_plg) for _plg in list(plg)])
@@ -26,16 +27,45 @@ def newPlg(plg : Plugin) -> Plugin :
         return Chain([newPlg(_plg) for _plg in list(plg)])
     elif isinstance(plg, Gain) :
         return Gain()
+    elif isinstance(plg, Delay) :
+        return Delay(mix=1)
+    elif isinstance(plg, Limiter) :
+        return Limiter()
+    elif isinstance(plg, Compressor) :
+        return Compressor()
     elif isinstance(plg, Reverb) :
         return Reverb()
-    elif isinstance(plg, Chorus) :
-        return Chorus()
+    elif isinstance(plg, HighpassFilter) :
+        return HighpassFilter()
+    elif isinstance(plg, LowpassFilter) :
+        return LowpassFilter()
 
 
 def newBoard(board : Pedalboard) -> Pedalboard :
     """ New instance of a Pedalboard """
     return Pedalboard([newPlg(plg) for plg in list(board)])
-    
+
+def equal_boards(a : Pedalboard, b : Pedalboard) -> bool : 
+    """
+    Check if two boards contain the same plugins in the same order
+    """
+    if len(a) != len(b) :
+        return False
+    for i in range(len(a)) :
+        if type(a[i]) != type(b[i]) : return False
+    return True
+
+def board_plg_num(board : Pedalboard) -> int :
+    """
+    Count the number of plugins in a board (excluding chain and mix)
+    """
+    if list(board) == [] :
+        return 0
+
+    hd, *tl = board
+    ad = board_plg_num(hd) if isinstance(hd, Chain) or isinstance(hd, Mix) else 1
+    return ad + board_plg_num(tl)
+
 
 def addSeries(board1, board2) :
     """ Chain two boards in series """
@@ -61,16 +91,24 @@ def simplify_chain(chain : Chain) :
         cur = chain[ctr-1]
         nxt = chain[ctr]
 
-        if type(cur) == type(nxt) :
+        if type(cur) == type(nxt) and not (isinstance(cur, Mix) or isinstance(cur, Chain)) :
             
             if isinstance(cur, Gain) :
-                cur.gain_db = cur.gain_db + nxt.gain_db
+                cur.gain_db += nxt.gain_db
+                rmv(chain, nxt, ctr)
+            if isinstance(cur, Delay) :
+                cur.delay_seconds += nxt.delay_seconds
+                rmv(chain, nxt, ctr)     
+            if isinstance(cur, HighpassFilter) :
+                cur.cutoff_frequency_hz = min(cur.cutoff_frequency_hz, nxt.cutoff_frequency_hz)
+                rmv(chain, nxt, ctr)
+            if isinstance(cur, LowpassFilter) :
+                cur.cutoff_frequency_hz = max(cur.cutoff_frequency_hz, nxt.cutoff_frequency_hz)
+                rmv(chain, nxt, ctr)
+            if isinstance(cur, Limiter) :
+                cur.cutoff_frequency_hz = min(cur.cutoff_frequency_hz, nxt.cutoff_frequency_hz)
                 rmv(chain, nxt, ctr)
 
-            if isinstance(cur, Chorus) :
-                if abs(cur.mix - nxt.mix) <= 0.005 :
-                    cur.mix = cur.mix + nxt.mix
-                    rmv(chain, nxt, ctr)
             
             if isinstance(cur, Reverb) :
                 if abs(cur.wet_level - nxt.wet_level) <= 0.005 and \

@@ -1,5 +1,5 @@
-import numpy as np
 from pedalboard import Pedalboard, Plugin, Chain, Mix
+import numpy as np
 from scipy.signal import stft
 from scipy.optimize import minimize
 from plgUtil import get_plg_args
@@ -7,9 +7,8 @@ from plgUtil import get_plg_args
 def calc_error(arr1 : np.ndarray, arr2 : np.ndarray, fs=2048) -> int:
     """
     oc: @jatinchowdhury18
-    Calculate the error between two wav files,
-    using a combination  of mean-squared error
-    and spectrogram loss
+    Calculate the error between two wav files, using a combination of 
+    mean-squared error and spectrogram loss
     """
     mean_square_error = np.mean((arr1 - arr2)**2, axis=None) # get mse
 
@@ -29,9 +28,8 @@ def calc_error(arr1 : np.ndarray, arr2 : np.ndarray, fs=2048) -> int:
 
 def get_param_error(argvals, argkeys, plg, board, input_buf, target_buf, samplerate) :
     """
-    Retrieve error of Pedalboard module with certain parameters applied to a singular 
-    plugin (plg) in the Pedalboard object (pb)
-    
+    Retrieve error of Pedalboard module with certain parameters applied to a 
+    singular plugin (plg) in the Pedalboard object (pb)
     """
     for i in range(len(argkeys)) : setattr(plg, argkeys[i], argvals[i])
     effected = board(input_buf, samplerate)
