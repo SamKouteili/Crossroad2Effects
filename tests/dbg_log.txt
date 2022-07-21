@@ -1,0 +1,87 @@
+GEN 0 ERRORS:
+ [0.024515947, 0.02876793, 0.060138587, 0.0791123, 0.08241996, 0.08487466, 0.08706577, 0.09231645, 0.095671065, 0.10984982, 0.12577422, 0.12585539]
+MODELS:
+(gaina0e90) : (limf07e0)
+(lim4f140)
+(((lpf6b2d0))), (((lpf005e0))) :> (((lpfe90f0))), (((lpfb45e0))) :> _
+(((lpf30bb0))), (((lpf22c60))) :> _
+(gainbd280)
+(hpf23600)
+(rev80d30)
+(lpf1ed80)
+(gain4cff0) : (lim343e0) : (gain4f0c0) : (limb8980)
+(delddc70)
+(hpf53cd0) : (deld3f60) <: (((lpf79540))), (((lpfdba90))) :> (((lpf1ac00))), (((lpf17590))) :> _
+(del9e670) <: (((lpf15990))), (((lpfd9e90))) :> (((lpff4900))), (((lpf2caf0))) :> _
+(del22eb0) <: (((lpf15920))), (((lpf2ce10))) :> (((lpfa0b40))), (((lpff1490))) :> (revd20e0)
+(gaind7df0) <: ((lim71c70)), ((deld5e80)) :> _
+(gaina9480) <: ((lim85380)), ((delb03b0)) :> (gain451f0) <: ((limfd8f0)), ((delc6bb0)) :> _
+((gain6da20)), ((delf5d30)) :> (lime5eb0)
+
+GEN 0 ERRORS:
+ [0.02876793, 0.08241996, 0.08487466, 0.08706577, 0.09231645, 0.10984982]
+MODELS:
+(lim4c6b0)
+(gainbd280)
+(hpffe850)
+(rev65d20)
+(lpfac800)
+(del1f500)
+(((del6e640))), (((gain24040))) :> _
+(((del22eb0))), (((gaind55d0))) :> (lpf7ebb0)
+(((delf6bc0))), (((gaindc6b0))) :> (rev659a0) : (lpfe90f0)
+(((delc8390))), (((gain4b650))) :> (((delbbf30))), (((gaina3730))) :> _
+(lpf3bde0) : (hpfd98b0)
+(lpf88fa0) : (del699d0) : (hpfac590)
+(lpf6b2d0) <: (((delaeab0))), (((gain2ed90))) :> (((delf8b80))), (((gain79680))) :> _
+(((del83980))), (((gain93a70))) :> (((del44d90))), (((gain6da20))) :> (gainfd330)
+(((deld3f60))), (((gain81550))) :> (((delbc390))), (((gain240c0))) :> (gain1f2c0) : (del3e480)
+(lime20b0) : (lpfd1f40) : (delf7c90) : (hpf5c9f0)
+
+GEN 0 ERRORS:
+ [0.02876793, 0.08241996, 0.08487466, 0.08706577, 0.09231645, 0.10984982]
+MODELS:
+(lim28cb0)
+(gainbfea0)
+(hpfdc840)
+(rev5ee40)
+(lpf91e50)
+(delf8780)
+((revcf570)), ((lpf62e70)) :> _
+(revd6190) <: ((rev7e620)), ((lpf62dc0)) :> _
+(rev04be0) : (lpf28830)
+(gainef210) : (rev78260) : (lpf11f60)
+(gain26820) : (rev5e240) : (del1f500) : (lpf1e3a0)
+(gainde330) : (rev880d0) : (delbf390) : (reva07c0) : (lpfac590)
+(gain0f6b0) : (gainaa9d0) : (revb6360) : (deleeae0) : (rev725a0) : (lpfd1f40)
+(lpf79540) : (gainf9af0) : (gain79680) : (rev4f7d0) : (del4bbd0) : (revc5d20) : (lpf65c60)
+(lpf2caf0) : (gain6da20) : (gaindc7b0) : (hpfecfe0) : (rev284f0) : (del60a00) : (reve26c0) : (lpf1b290)
+(lpf02220) : (gaind54a0) : (gain0e520) : (hpfe3970) : (rev5a600) : (deld6100) <: ((rev22fb0)), ((del16e50)) :> (lpfd4500)
+
+GEN 0 ERRORS:
+ [0.02876793, 0.08241996, 0.08487466, 0.08706577, 0.09231645, 0.10984982]
+MODELS:
+(limc8360)
+(gainf1450)
+(hpf9fe60)
+(rev9f8f0)
+(lpf1fbc0)
+(del87af0)
+(lpfef040) : (del83980)
+(lpf9e4d0) <: ((del2dd70)), ((gainda050)) :> _
+(((lpf15bb0))), (((lpf52170) <: ((del236f0)), ((gaine8780)) :> _)) :> _
+(((lpfac590))), (((lpf23600) <: ((del590b0)), ((gaind1970)) :> _)) :> (lpf95d30) : (del1f580)
+(((lpf2caf0))), (((lpf1ed80) <: ((delc6bb0)), ((gainc5d90)) :> _)) :> ((lpf48ca0)), ((lim60460)) :> (del53400)
+(((lpf6b2d0))), (((lpfb45e0) <: ((del6e640)), ((gain71600)) :> _)) :> ((lpfbf9a0)), ((lim45850)) :> (del699d0) : (delfeb60)
+(lpf8c8e0) <: (((lpf1a100))), (((lpfda0f0) <: ((del44d90)), ((gainbe1a0)) :> _)) :> ((lpf6eee0)), ((lime5190)) :> _
+(lpf53cd0) : (del1ec00) : (lim60310)
+(((lpf005e0))), (((lpfe5d60) <: ((del60250)), ((gain4ff10)) :> _)) :> (lpf48d30) <: ((del6c6a0)), ((gain59710)) :> _
+(rev2e890) <: (((lpfe90f0))), (((lpf05260) <: ((delf4e50)), ((gaine8e60)) :> _)) :> (lpf7ca10) <: ((del99660)), ((gain45180)) :> _
+
+
+
+****************************************************************************************************
+THE MODEL DID NOT CONVERGE!
+ Model: <Pedalboard with 4 plugins: [<pedalboard.Mix with 2 plugins: [<pedalboard.Chain with 1 plugin: [<pedalboard.Gain gain_db=1 at 0x557363fbb9a0>] at 0x55736ff72250>, <pedalboard.Chain with 1 plugin: [<pedalboard.Reverb room_size=0.999996 damping=0.999996 wet_level=1 dry_level=0.999995 width=0.4724 freeze_mode=0.699246 at 0x55736592e2d0>] at 0x55736552ed30>] at 0x5573653d75e0>, <pedalboard.Chain with 1 plugin: [<pedalboard.Gain gain_db=1 at 0x5573659b7820>] at 0x5573647ee0c0>, <pedalboard.Mix with 2 plugins: [<pedalboard.Chain with 1 plugin: [<pedalboard.Limiter threshold_db=0 release_ms=100 at 0x5573641a5950>] at 0x557364279620>, <pedalboard.Chain with 1 plugin: [<pedalboard.Delay delay_seconds=0.5 feedback=0 mix=0 at 0x557363f1c930>] at 0x5573654b9670>] at 0x5573652ceb90>, <pedalboard.Chain with 1 plugin: [<pedalboard.Highpass cutoff_frequency_hz=50 at 0x5573641f3940>] at 0x55736559e430>]>
+ Error: 0.01718725822865963
+ Time: 73.3372905254364

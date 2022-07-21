@@ -44,6 +44,7 @@ def optimize_plg_params(plg : Plugin, board : Pedalboard, input_buf, target_buf,
     params = get_plg_args(plg)
     argkeys = list(params.keys())
     argvals = list(params.values())
+
     bounds = [(0, 1) if v <= 1 else (0, 2*v) for v in params.values()]
 
     if params == [] : return board
@@ -55,6 +56,8 @@ def optimize_plg_params(plg : Plugin, board : Pedalboard, input_buf, target_buf,
     for i in range(len(argkeys)) : setattr(plg, argkeys[i], result.x[i])
     
     return board
+
+# def get_bounds(argkeys, argvals) 
 
 def optimize_board(board : Pedalboard, input_buf, target_buf, samplerate, tol=1.0e-5) :
     """

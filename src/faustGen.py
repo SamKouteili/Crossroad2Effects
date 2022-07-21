@@ -91,9 +91,11 @@ def faust_header(board : Pedalboard) -> str :
     return app + faust_header(tl)
 
 
-def write_faust_file(board : Pedalboard, name="filter.dsp") :
+def write_faust_file(board : Pedalboard, error : float, name="filter.dsp") :
+    e = f'/*** Calculated Error from Original Wet File: {error} ***/\n'
     w = f'import("stdfaust.lib");\n\n{faust_header(board)}\nprocess = {faustify(board)};'
     file = open(name, "w")
+    file.write(e)
     file.write(w)
     file.close
 

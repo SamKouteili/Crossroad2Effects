@@ -1,4 +1,0 @@
-THE MODEL DID NOT CONVERGE!
- Model: <Pedalboard with 4 plugins: [<pedalboard.Chain with 1 plugin: [<pedalboard.Gain gain_db=1 at 0x56337da94080>] at 0x56337daf0050>, <pedalboard.Chain with 1 plugin: [<pedalboard.Reverb room_size=0.5 damping=0.5 wet_level=0.33 dry_level=0.4 width=1 freeze_mode=0 at 0x56337dd79390>] at 0x56337df07ad0>, <pedalboard.Chain with 1 plugin: [<pedalboard.Compressor threshold_db=0 ratio=1 attack_ms=1 release_ms=100 at 0x56337d8aa010>] at 0x56337d91d1b0>, <pedalboard.Chain with 1 plugin: [<pedalboard.Lowpass cutoff_frequency_hz=50 at 0x56337dc0f8f0>] at 0x56337d9ea330>]>
- Error: 9.569419489707798e-05
- Time: 475.97187781333923

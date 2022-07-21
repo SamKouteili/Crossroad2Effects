@@ -1,4 +1,3 @@
-from ntpath import join
 from pedalboard import Pedalboard, Plugin, Chain, Mix
 import time as ti
 import numpy as np
@@ -6,47 +5,51 @@ import random as rd
 from plgUtil import *
 from paramOptim import *
 from faustGen import *
+from ntpath import join
 
-P_MUTATION = 0.4
-P_MERGE = 0.5
 
-MAX_BOARD_SZ = 16
+__DEBUG__ = True # Debug mode
 
-N_POP = 12
-N_GEN = 100
-N_SURVIVE = 24
 
-TOL = 1.0e-5
-
+RESET = 3 # Number of genetic resets
 WEIGHTED = True # Choosing whether to weight surviving parents for reproduction probability
 CALC_ERROR = False # Choosing method of testing equivalence between two models
+
+TOL = 1.0e-5 # Convergence bound
+
+N_POP = 10 # Initial population size
+N_GEN = 100 # Number of generations
+N_SURVIVE = 24 # Number of survivors after each generation
+
+MAX_BOARD_SZ = 12 # Max generated board size
+
+P_MUTATION = 0.4 # Probability of mutating a parent
+P_MERGE = 0.5 # Probability of joining parents in full (as opposed to joining them in half)
+
 
 def evolve(dry, wet, sr) :
     """
     Primary genetic algorithm
     """
-    # initialize models
-    models = [Pedalboard([Chain([newPlg(plg)])]) for plg in PLUGINS]
-    
+
+    Reset = RESET
+
     N_pop = N_POP
 
     cur_gen = 0
     converged = False
     elapsed = ti.time()
-    best = None
+
+    # initialize models
+    models = [Pedalboard([Chain([newPlg(plg)])]) for plg in PLUGINS]
+    best = [models[0], 1]
     
     # do I want this here?
     models = generation(models, wet, sr, N_pop)
-    file = open("result.txt", "w")
-
-    modf = open("models.txt", "w")
-
+    
+    if __DEBUG__ : f_dbg = open("dbg_log.txt", "w")
 
     while cur_gen < N_GEN :
-        
-        for mod in models :
-            if mod == None :
-                modf.write("\n\n****ANOTHER NONE****\n\n")
 
         models = [mod for mod in models if mod != None]
         # models = [simplify_board(mod) for mod in models]
@@ -61,50 +64,61 @@ def evolve(dry, wet, sr) :
             
         if N_pop < 56 :
             N_pop += 4
-        
-        # reset search (second time weighted parent choice)
-        # if cur_gen == N_GEN/2 :
-
-        #     best = [models[0], errors[0]]
-
-        #     N_pop = N_POP
-
-        #     models = [Pedalboard([Chain([newPlg(plg)])]) for plg in PLUGINS]
-
-        #     print(f"Resetting search with unweighted parent distributions...")
-        #     print(f" Best Model: {best[0]}\n Error: {best[1]}")
 
         models = generation(models, wet, sr, N_pop)
 
-        if cur_gen % 10 == 0 :
-            fausted, n = [faustify(model) for model in models], '\n'
-            modf.write(f"GEN {cur_gen} ERRORS:\n    {errors}\nMODELS:\n{n.join(fausted)}\n\n")
+        if __DEBUG__ :
 
+            if cur_gen % 10 == 0 :
+                fausted, n = [faustify(model) for model in models], '\n'
+                f_dbg.write(f"GEN {cur_gen} ERRORS:\n {errors}\n" + \
+                    f"MODELS:\n{n.join(fausted)}\n\n")
+
+            print(f"BEST MODEL THUS FAR ({cur_gen})\n ERROR: {errors[0]}\n MODEL: {models[0]}")
+
+        
         cur_gen += 1
 
-        print(f"BEST MODEL THUS FAR ({cur_gen})\n ERROR: {errors[0]}\n MODEL: {models[0]}")
+        # reset search
+        if cur_gen == N_GEN :
 
+            best[0] = models[0] if errors[0] < best[1] else best[0]
+            best[0] = optimize_board(best[0], dry, wet, sr)
+            # try : 
+            #     best[0] = optimize_board(best[0], dry, wet, sr)
+            # except Exception : 
+            #     best[0] = simplify_board(best[0])
+
+            best[1] = calc_error(best[0](dry, sr), wet)
+
+            if Reset > 0 :
+
+                N_pop = N_POP
+                Reset -= 1
+                cur_gen = 0
+
+                models = [Pedalboard([Chain([newPlg(plg)])]) for plg in PLUGINS]
+
+                print(f"Resetting search with unweighted parent distributions...")
+                print(f" Best Model: {best[0]}\n Error: {best[1]}")
+
+            else : break
     
     # # Can move this inside the loop to do itertively; better results higher time ceiling
     # simplify_board(models[0])
     # models[0] = optimize_board(models[0], dry, wet, sr)
     # errors[0] = calc_error(models[0](dry, sr), wet)
 
-    # if errors[0] < best[1] :
-    #     best[0] = optimize_board(models[0], dry, wet, sr)
-    #     best[1] = errors[0]
-    # else :
-    #     best[0] = optimize_board(best[0], dry, wet, sr)
-    # simplify_board(best[0])
+    if __DEBUG__ :
 
-    modf.close()
-    conv = "CONVERGED" if converged else "DID NOT CONVERGE"
-    file.write(f"THE MODEL {conv}!\n ")
-    file.write(f"Model: {models[0]}\n Error: {errors[1]}\n Time: {ti.time() - elapsed}")
-    file.close()
+        conv = "CONVERGED" if converged else "DID NOT CONVERGE"
+        f_dbg.write(f"\n\n{'*'*100}\n")
+        f_dbg.write(f"THE MODEL {conv}!\n ")
+        f_dbg.write(f"Model: {best[0]}\n Error: {best[1]}\n Time: {ti.time() - elapsed}")
+        f_dbg.close()
+    
 
-    return models
-
+    return best
 
 
 
@@ -117,8 +131,10 @@ def generation(models, wet, sr, N_pop):
         for model in models :
             if model == None : 
                 models.remove(model)
-            elif board_plg_num(model) > MAX_BOARD_SZ :
+            elif board_plg_num(model) >= MAX_BOARD_SZ :
                 models.remove(model)
+        if models == [] :
+            models = [Pedalboard([Chain([newPlg(plg)])]) for plg in PLUGINS]
 
         while True :
             parents = choose_parents(models)
