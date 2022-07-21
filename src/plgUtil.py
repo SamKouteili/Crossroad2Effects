@@ -1,7 +1,7 @@
 from pedalboard import Pedalboard, Plugin, Chain, Mix, Gain, Delay, Limiter, Compressor, Reverb, HighpassFilter, LowpassFilter
 
 # List of plugin blocks considered by the genetic algorithm. Add user defined plugins here
-PLUGINS = [Gain(), Delay(), Reverb(), HighpassFilter(), LowpassFilter()]
+PLUGINS = [Gain(), Delay(), Compressor(), Limiter(), Reverb(), HighpassFilter(), LowpassFilter()]
 #~complim
 
 # weigh plugins?

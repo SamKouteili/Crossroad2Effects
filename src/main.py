@@ -1,7 +1,8 @@
-from isort import file
 from pedalboard import Pedalboard, Plugin, Chain, Mix
 from pedalboard.io import AudioFile
 import argparse
+import librosa
+import matplotlib.pyplot as plt
 from plgUtil import *
 from genAlgo import *
 from faustGen import *
@@ -13,7 +14,7 @@ parser.add_argument('dry', type=str,
 parser.add_argument('wet', type=str,
                     help='wet sound file directory path')
 parser.add_argument('--name', type=str,
-                help='An optional integer argument')
+                help='faust filter file name')
 parser.add_argument("-d", "--debug", help="Debug Mode",
                 action="store_true")
     
@@ -32,3 +33,14 @@ with AudioFile(args.wet, 'r') as f:
 name = args.name if args.name != None else "filter.dsp"
 
 write_faust_file(board, error, name, time)
+
+if __DEBUG__ :
+        
+    fig, ax = plt.subplots(1,2, figsize = (15,5), sharey = True)
+    ax[0].set(title = f'Wet File Waveform')
+    librosa.display.waveshow(wet, sr=sr, ax=ax[0], color="orange")
+    ax[1].set(title = 'Generated Filter Waveform')
+    librosa.display.waveshow(board(dry, sr), sr=sr, ax=ax[1])
+
+
+    plt.savefig("waveforms.png", facecolor='white')
