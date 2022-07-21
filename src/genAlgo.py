@@ -7,18 +7,14 @@ from paramOptim import *
 from faustGen import *
 from ntpath import join
 
-
-__DEBUG__ = True # Debug mode
-
-
-RESET = 3 # Number of genetic resets
+RESET = 2 # Number of genetic resets
 WEIGHTED = True # Choosing whether to weight surviving parents for reproduction probability
 CALC_ERROR = False # Choosing method of testing equivalence between two models
 
 TOL = 1.0e-5 # Convergence bound
 
 N_POP = 10 # Initial population size
-N_GEN = 100 # Number of generations
+N_GEN = 10 # Number of generations
 N_SURVIVE = 24 # Number of survivors after each generation
 
 MAX_BOARD_SZ = 12 # Max generated board size
@@ -27,7 +23,7 @@ P_MUTATION = 0.4 # Probability of mutating a parent
 P_MERGE = 0.5 # Probability of joining parents in full (as opposed to joining them in half)
 
 
-def evolve(dry, wet, sr) :
+def evolve(dry, wet, sr, __DEBUG__) :
     """
     Primary genetic algorithm
     """
@@ -47,7 +43,7 @@ def evolve(dry, wet, sr) :
     # do I want this here?
     models = generation(models, wet, sr, N_pop)
     
-    if __DEBUG__ : f_dbg = open("dbg_log.txt", "w")
+    if __DEBUG__ : f_dbg = open("log.txt", "w")
 
     while cur_gen < N_GEN :
 
@@ -59,6 +55,8 @@ def evolve(dry, wet, sr) :
         models = [models[i] for i in aridxs]
 
         if errors[0] <= TOL :
+            best[0] = models[0]
+            best[1] = errors[0]
             converged = True
             break
             
@@ -71,7 +69,7 @@ def evolve(dry, wet, sr) :
 
             if cur_gen % 10 == 0 :
                 fausted, n = [faustify(model) for model in models], '\n'
-                f_dbg.write(f"GEN {cur_gen} ERRORS:\n {errors}\n" + \
+                f_dbg.write(f"***GENERATION ({cur_gen})\nERRORS:\n {errors}\n" + \
                     f"MODELS:\n{n.join(fausted)}\n\n")
 
             print(f"BEST MODEL THUS FAR ({cur_gen})\n ERROR: {errors[0]}\n MODEL: {models[0]}")
@@ -109,16 +107,18 @@ def evolve(dry, wet, sr) :
     # models[0] = optimize_board(models[0], dry, wet, sr)
     # errors[0] = calc_error(models[0](dry, sr), wet)
 
+    time = ti.time() - elapsed
+
     if __DEBUG__ :
 
         conv = "CONVERGED" if converged else "DID NOT CONVERGE"
         f_dbg.write(f"\n\n{'*'*100}\n")
         f_dbg.write(f"THE MODEL {conv}!\n ")
-        f_dbg.write(f"Model: {best[0]}\n Error: {best[1]}\n Time: {ti.time() - elapsed}")
+        f_dbg.write(f"Model: {best[0]}\n Error: {best[1]}\n Time: {time}")
         f_dbg.close()
     
 
-    return best
+    return [*best, time]
 
 
 

@@ -1,0 +1,64 @@
+***GENERATION (0)
+ERRORS:
+ [0.0014231529, 0.0014454925, 0.0014720616, 0.001567273, 0.0016296511, 0.0022515375, 0.0023046075, 0.0025211235, 0.0025388, 0.0025531845]
+MODELS:
+(lpf3ea80) : (lpf23ce0)
+(revd4cb0) : (lpf611e0) : (lpf0b4a0)
+(lpf538a0)
+(revef8a0)
+(rev15730) : (lpfec100) : (lpf69c90) : (rev2e950) : (lpfe0d20) : (lpfccfa0)
+(hpf694f0)
+(del51c20)
+(gain766b0)
+(((reva8410))), (((rev47f60) : (lpf7d8d0) : (lpfd9170))) :> _
+(((rev61640))), (((rev7a860) : (lpf84380) : (lpfbe170))) :> (hpf4ade0)
+(hpfedde0) : (revedfc0) : (lpf072c0) : (lpf07480)
+(hpfe8700) : (rev95970) : (lpf716e0) : (del58e50) : (lpfed1e0)
+(rev6ff90) : (lpf6f9f0) : (lpf6fa60) <: ((rev894d0)), ((gainf2940)) :> (lpf6fb30) : (lpfa2d80)
+(revd3fc0) : (lpf08a50) : (lpf08b90) <: ((revbaca0)), ((gained900)) :> (lpf0ce00) : (lpfa2f20) <: (((reva3140))), (((revbc3e0) : (lpfa2f90) : (lpfa3060))) :> _
+
+***GENERATION (0)
+ERRORS:
+ [0.0014720616, 0.001567273, 0.0022515375, 0.0023046075, 0.0025211235]
+MODELS:
+(lpf83d30)
+(rev28d80)
+(hpfc1910)
+(del845e0)
+(gain9b640)
+(gain01ff0) : (gain0c970)
+(((hpf74e40))), (((gain9e020) : (gain41090))) :> _
+(((hpf964f0))), (((gaind1be0) : (gain80b60))) :> (hpf83d90)
+(((hpf3ea80))), (((gained380) : (gaincc500))) :> ((hpf538a0)), ((gain611e0)) :> _
+(((hpf3e4b0))), (((gainab8e0) : (gain7c7c0))) :> ((hpf3e400)), ((gaince980)) :> (((hpf8b570))), (((gainec100) : (gain5af10))) :> ((hpfb5610)), ((gainac910)) :> _
+(((hpf73f70))), (((gaine74c0) : (gain9b720))) :> ((hpfe8190)), ((gain17440)) :> (((hpf84a10))), (((gain67ac0) : (gain19df0))) :> ((hpf78f50)), ((gain5c550)) :> (lpfd9170)
+(gain3def0) : (gain1df10) : (gainfdc20)
+(gain17500) : (gainc1ec0) <: ((gain3ff90)), ((gainc1ca0)) :> _
+(gain58bc0) : (gain94180) <: ((gain58d50)), ((gainbe170)) :> (((hpfae6e0))), (((gainb6000) : (gaincbcb0))) :> _
+
+***GENERATION (0)
+ERRORS:
+ [0.0014720616, 0.001567273, 0.0022515375, 0.0023046075, 0.0025211235]
+MODELS:
+(lpf60600)
+(rev01c80)
+(hpf31460)
+(delc6e20)
+(gaincb480)
+(revd74f0) : (gain7c620)
+(revd3dd0) : (gainbca60) : (revda240) : (gain8acb0)
+(revb1890) : (gaincbcb0) : (hpf440f0) : (rev199d0) : (gainc6d20)
+(((revb0b10) : (gainfeac0) : (hpfcb410) : (rev03d70) : (gain3e290))), (((revd3330))) :> _
+(lpf14930) : (rev8b5f0) : (gaind3b20)
+(lpfd9170) : (rev846a0) : (gaina86c0) <: (((reva8350) : (gain3dc70) : (hpfd1be0) : (revd3150) : (gainc8930))), (((revd6550))) :> _
+((lpf23ce0)), ((reve68e0)) :> (rev3c1a0) : (gain93c10) <: (((rev2b9a0) : (gain44070) : (hpf10d60) : (rev2d6f0) : (gain41090))), (((rev0e640))) :> _
+(hpf3ea80) <: ((lpfa2e30)), ((revf1070)) :> (rev5c220) : (gain72bf0) <: (((rev21570) : (gainc1470) : (hpf88e10) : (rev18350) : (gainae640))), (((revd4cb0))) :> _
+(deld68d0) : (rev89580) : (gain215c0) : (hpfba2b0) : (reve30c0) : (gaine2f40)
+
+
+
+****************************************************************************************************
+THE MODEL DID NOT CONVERGE!
+ Model: <Pedalboard with 5 plugins: [<pedalboard.Chain with 1 plugin: [<pedalboard.Lowpass cutoff_frequency_hz=50 at 0x55d6612c1ca0>] at 0x55d66cc10ce0>, <pedalboard.Mix with 2 plugins: [<pedalboard.Chain with 1 plugin: [<pedalboard.Lowpass cutoff_frequency_hz=50 at 0x55d6612491b0>] at 0x55d6616fecc0>, <pedalboard.Chain with 1 plugin: [<pedalboard.Delay delay_seconds=0.5 feedback=0 mix=0.502397 at 0x55d66183c000>] at 0x55d66111df10>] at 0x55d661b48960>, <pedalboard.Chain with 1 plugin: [<pedalboard.Reverb room_size=0.532281 damping=0.53219 wet_level=0.324687 dry_level=0.318986 width=0.988212 freeze_mode=0.0310147 at 0x55d6650846a0>] at 0x55d6613ba220>, <pedalboard.Chain with 1 plugin: [<pedalboard.Gain gain_db=0.999767 at 0x55d6616fed20>] at 0x55d6612589b0>, <pedalboard.Chain with 1 plugin: [<pedalboard.Highpass cutoff_frequency_hz=50 at 0x55d6610d1be0>] at 0x55d661bcd460>]>
+ Error: 0.0005221457686275244
+ Time: 93.75345230102539
