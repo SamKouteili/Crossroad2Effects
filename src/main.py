@@ -45,7 +45,8 @@ if __DEBUG__ :
     ax[1].set(title = 'Generated Filter Waveform')
     librosa.display.waveshow(board(dry, sr), sr=sr, ax=ax[1])
 
-
     plt.savefig("./output/waveforms.png", facecolor='white')
 
-    #FAUST2PNG!!! add to debug
+    subprocess.run(f"faust2svg ./output/{name}")
+
+    
