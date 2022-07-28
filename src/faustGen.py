@@ -87,7 +87,8 @@ def faust_header(board : Pedalboard) -> str :
     if isinstance(hd, Chain) or isinstance(hd, Mix) :
         app = faust_header(hd)
     else :
-        app = faust_str_block(hd)[1]
+        print(faust_str_block(hd))
+        app = (faust_str_block(hd))[1]
     return app + faust_header(tl)
 
 

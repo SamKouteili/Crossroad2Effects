@@ -1,5 +1,6 @@
 from pedalboard import Pedalboard, Plugin, Chain, Mix
 from pedalboard.io import AudioFile
+import subprocess
 import argparse
 import librosa
 import matplotlib.pyplot as plt
@@ -32,7 +33,9 @@ with AudioFile(args.wet, 'r') as f:
 
 name = args.name if args.name != None else "filter.dsp"
 
-write_faust_file(board, error, name, time)
+subprocess.run("mkdir output")
+
+write_faust_file(board, error, f"./output/{name}", time)
 
 if __DEBUG__ :
         
@@ -43,4 +46,6 @@ if __DEBUG__ :
     librosa.display.waveshow(board(dry, sr), sr=sr, ax=ax[1])
 
 
-    plt.savefig("waveforms.png", facecolor='white')
+    plt.savefig("./output/waveforms.png", facecolor='white')
+
+    #FAUST2PNG!!! add to debug

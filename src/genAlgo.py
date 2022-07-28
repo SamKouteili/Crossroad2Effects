@@ -7,14 +7,14 @@ from paramOptim import *
 from faustGen import *
 from ntpath import join
 
-RESET = 2 # Number of genetic resets
+RESET = 3 # Number of genetic resets
 WEIGHTED = True # Choosing whether to weight surviving parents for reproduction probability
 CALC_ERROR = False # Choosing method of testing equivalence between two models
 
-TOL = 1.0e-5 # Convergence bound
+TOL = 1.0e-5 # Convergence bound    
 
-N_POP = 10 # Initial population size
-N_GEN = 10 # Number of generations
+N_POP = 4 # Initial population size
+N_GEN = 101 # Number of generations
 N_SURVIVE = 24 # Number of survivors after each generation
 
 MAX_BOARD_SZ = 12 # Max generated board size
@@ -43,7 +43,7 @@ def evolve(dry, wet, sr, __DEBUG__) :
     # do I want this here?
     models = generation(models, wet, sr, N_pop)
     
-    if __DEBUG__ : f_dbg = open("log.txt", "w")
+    if __DEBUG__ : f_dbg = open("./output/log.txt", "w")
 
     while cur_gen < N_GEN :
 
