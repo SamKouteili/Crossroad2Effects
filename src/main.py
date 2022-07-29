@@ -11,9 +11,9 @@ from faustGen import *
 parser = argparse.ArgumentParser(description='CrossRoads2Effects: Your Filter Finder')
 
 parser.add_argument('dry', type=str,
-                    help='dry sound file directory path')
+                    help='dry sound file directory path (wav file)')
 parser.add_argument('wet', type=str,
-                    help='wet sound file directory path')
+                    help='wet sound file directory path (wav file)')
 parser.add_argument('--name', type=str,
                 help='faust filter file name')
 parser.add_argument("-d", "--debug", help="Debug Mode",
@@ -22,6 +22,9 @@ parser.add_argument("-d", "--debug", help="Debug Mode",
 args = parser.parse_args()
 
 __DEBUG__ = args.debug
+
+subprocess.run(["rm", "-rf", "output"])
+subprocess.run(["mkdir", "output"])
 
 with AudioFile(args.dry, 'r') as f:
     dry = f.read(f.frames)
@@ -33,8 +36,6 @@ with AudioFile(args.wet, 'r') as f:
 
 name = args.name if args.name != None else "filter.dsp"
 
-subprocess.run("mkdir output")
-
 write_faust_file(board, error, f"./output/{name}", time)
 
 if __DEBUG__ :
@@ -42,11 +43,11 @@ if __DEBUG__ :
     fig, ax = plt.subplots(1,2, figsize = (15,5), sharey = True)
     ax[0].set(title = f'Wet File Waveform')
     librosa.display.waveshow(wet, sr=sr, ax=ax[0], color="orange")
-    ax[1].set(title = 'Generated Filter Waveform')
+    ax[1].set(title = 'Generated Waveform')
     librosa.display.waveshow(board(dry, sr), sr=sr, ax=ax[1])
 
     plt.savefig("./output/waveforms.png", facecolor='white')
 
-    subprocess.run(f"faust2svg ./output/{name}")
+    subprocess.run(["faust2svg", f"./output/{name}"])
 
     

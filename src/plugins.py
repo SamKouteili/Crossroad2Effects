@@ -5,7 +5,7 @@ from pedalboard import Pedalboard, Plugin, Chain, Mix, Gain, Delay, Limiter, Com
  
 
  
-# #####################################################################################################
+#######################################################################################################
 
 BASE_PLUGINS = [Gain(), Delay(), Compressor(), Limiter(), Reverb(), HighpassFilter(), LowpassFilter()]
 

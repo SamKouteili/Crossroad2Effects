@@ -7,14 +7,14 @@ from paramOptim import *
 from faustGen import *
 from ntpath import join
 
-RESET = 3 # Number of genetic resets
+RESET = 2 # Number of genetic resets
 WEIGHTED = True # Choosing whether to weight surviving parents for reproduction probability
 CALC_ERROR = False # Choosing method of testing equivalence between two models
 
 TOL = 1.0e-5 # Convergence bound    
 
-N_POP = 4 # Initial population size
-N_GEN = 101 # Number of generations
+N_GEN = 11 # Number of generations
+N_POP = 52 # Max population size
 N_SURVIVE = 24 # Number of survivors after each generation
 
 MAX_BOARD_SZ = 12 # Max generated board size
@@ -30,7 +30,7 @@ def evolve(dry, wet, sr, __DEBUG__) :
 
     Reset = RESET
 
-    N_pop = N_POP
+    N_pop = len(PLUGINS)
 
     cur_gen = 0
     converged = False
@@ -60,7 +60,7 @@ def evolve(dry, wet, sr, __DEBUG__) :
             converged = True
             break
             
-        if N_pop < 56 :
+        if N_pop < N_POP :
             N_pop += 4
 
         models = generation(models, wet, sr, N_pop)
@@ -69,10 +69,10 @@ def evolve(dry, wet, sr, __DEBUG__) :
 
             if cur_gen % 10 == 0 :
                 fausted, n = [faustify(model) for model in models], '\n'
-                f_dbg.write(f"***GENERATION ({cur_gen})\nERRORS:\n {errors}\n" + \
+                f_dbg.write(f"{'#'*8} GENERATION {cur_gen} {'#'*8}\nERRORS:\n {errors}\n" + \
                     f"MODELS:\n{n.join(fausted)}\n\n")
 
-            print(f"BEST MODEL THUS FAR ({cur_gen})\n ERROR: {errors[0]}\n MODEL: {models[0]}")
+            print(f"### BEST MODEL ({cur_gen})\n ERROR: {errors[0]}\n MODEL: {models[0]}")
 
         
         cur_gen += 1

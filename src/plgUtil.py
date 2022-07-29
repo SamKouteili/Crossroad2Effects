@@ -1,9 +1,9 @@
 from pedalboard import Pedalboard, Plugin, Chain, Mix, Gain, Delay, Limiter, Compressor, Reverb, HighpassFilter, LowpassFilter
 import plugins
 
-# List of plugin blocks considered by the genetic algorithm. Add user defined plugins here
+# List of plugin blocks considered by the genetic algorithm.
 PLUGINS = plugins.BASE_PLUGINS + plugins.ADDITIONAL_PLUGINS
-# weigh plugins?
+
 
 def get_plg_args(plg : Plugin) -> dict :
     """
@@ -17,6 +17,9 @@ def get_plg_args(plg : Plugin) -> dict :
     return d
 
 def gen_plg_dict() :
+    """
+    Generates a string dictionary of all base plugins.
+    """
     d = {}
     for plg in PLUGINS : 
         d[strPlg(plg)] = 0 

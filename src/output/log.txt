@@ -1,0 +1,72 @@
+######## GENERATION 0 ########
+ERRORS:
+ [0.0014720616, 0.001567273, 0.0022515375, 0.002287759, 0.0023046075, 0.0025211235, 0.03289636]
+MODELS:
+(lpf330f0)
+(rev81e30)
+(hpfff510)
+(comp7ba20)
+(delaf580)
+(gain7fde0)
+(lim68890)
+(((lim75e30))), (((compcef30))) :> _
+(((lim7bc80))), (((compd4a20))) :> (gain93bf0)
+(revd94d0) : (comp02aa0)
+(gain7fad0) : (rev5af80) : (compd3ea0)
+
+######## GENERATION 10 ########
+ERRORS:
+ [0.00090646575, 0.0014177881, 0.0014720616, 0.001567273, 0.001567273, 0.0016724701, 0.0022515375, 0.002287759, 0.0023046075, 0.0025211235, 0.0031133073, 0.003418718, 0.0036934968, 0.0065364786, 0.02017411, 0.02037857, 0.031382717, 0.032149445, 0.03289636, 0.036486086, 0.03667104, 0.036730476, 0.037262004, 0.037294984]
+MODELS:
+(rev30b80) : (comp21d30) <: ((rev2e5e0)), ((delc6280)) :> (comp3c410)
+((rev1a610)), ((delb4780)) :> (comp8da80)
+(lpf330f0)
+(rev81e30)
+(revd94d0) : (comp02aa0)
+(gain7fad0) : (rev5af80) : (compd3ea0)
+(hpfff510)
+(comp7ba20)
+(delaf580)
+(gain7fde0)
+(del29b40) <: ((rev4bfc0)), ((delf5670)) :> (comp6dfd0)
+(((dele89c0))), (((reve6da0) <: ((comp6db70)), ((hpf7ca80)) :> _)) :> _
+(rev933a0) <: ((comp052a0)), ((hpf7eac0)) :> _
+((reva3ff0)), ((del185b0)) :> ((comp1c9d0)), ((hpf76540)) :> _
+(lpfc5970) : (rev41d20) : (gainbcce0) : (reva3c80) : (lim80ea0) : (comp29a60) : (del86050)
+(rev66310) <: ((comp2cce0)), ((hpf936b0)) :> (revffba0) <: ((comp16050)), ((hpf8b7e0)) :> _
+(gain74a50) : (revf5fa0) : (limb6590) : (compa5270)
+(lpfe6fb0) : (gain98970) : (rev2f3e0) <: ((lim759d0)), ((gain69880)) :> (comp12f30)
+(lim68890)
+(((lima31f0))), (((comp55300))) :> (rev810b0) : (comp4e290) : (hpf4ce30)
+(((limbce30))), (((compb7460))) :> (rev160f0) : (compf9130)
+(revb4b90) : (gaine8200) : (reve7490) : (lim646e0) : (comp34570) : (del8e800)
+(comp86f60) : (delbf490) <: (((lim16110))), (((comp630e0))) :> (gain49e40) : (gain706b0) : (reveaa00) : (lpffa3c0) : (hpffc670)
+(revf4fa0) : (del331c0) <: (((lim977a0))), (((comp4da50))) :> _
+(gaindb950) : (rev25ae0) : (comp2f9e0) : (revdc2c0) <: ((comp66200)), ((hpfb2c20)) :> _
+((rev0ed80)), ((del7a0d0)) :> (comp4cd50) : (rev57880) : (comp387e0) <: ((rev31180)), ((delb59d0)) :> (compa9850)
+((rev15d90)), ((del6ffb0)) :> ((comp05c50)), ((hpfb2130)) :> (lpfa12a0)
+(lpf974b0) <: ((gain43800)), ((rev6d860)) :> (rev1eac0) <: ((lim5c700)), ((gain9c850)) :> (compc39c0)
+(lpf90e50) : (revaaec0) : (gaincbe40) : (revb7520) : (limee520) : (comp544f0) : (delb3780) : (del32560) <: ((rev6d250)), ((del9cad0)) :> (compc8550)
+(delf8440) <: ((revcb750)), ((del4cc80)) :> (compe4ce0) : (rev4db80) : (comp68190)
+(lpf9ab80) : (rev97800) : (gaine7a00) : (reva3cd0) : (limfd480) : (comp2b4e0) : (hpf1b6f0) : (del4c600)
+(((lim2af90))), (((compa29b0))) :> (rev006d0) : (comp65110) : (hpf69860) : (comp48170)
+(lpf96c70) : (reveb230) : (gainb6770) <: ((rev73c40)), ((limb7350)) :> (limbc130) : (compcef30) : (delc94d0)
+(hpf2d190) : (gaine8320) : (rev8ecb0) : (lim75460) : (compd2900)
+(lim50c30) : (lpfa8990) : (gain5ae50) : (rev11ec0) <: ((lim7fc90)), ((gainde8d0)) :> (comp7bbd0)
+((rev68190)), ((del29c20)) :> (comp33120) : (lpff4f20) : (reve58b0) : (gain652d0) : (revfdb10) : (lim19d20) : (comp7cf00) : (delec6a0)
+(hpfead10) : (rev19980) <: ((comp45bc0)), ((hpf34bf0)) :> (rev5a510) <: ((comp80ff0)), ((hpfa9bf0)) :> _
+(rev727f0) : (comp825a0) <: ((revac260)), ((delec160)) :> (compc6f20) : (comp60ab0)
+((rev0e400)), ((deldc5d0)) :> ((comp031f0)), ((hpf73b40)) :> (rev9e030) : (comp61080) <: ((rev0e0d0)), ((del166f0)) :> (comp4e1d0)
+(gainea980) <: ((revf9400)), ((del72220)) :> ((comp9d000)), ((hpfeb170)) :> _
+(hpffed20) : (rev34860) : (deldbea0) <: (((lim75e30))), (((comp23400))) :> _
+(gaina21b0) : (revfcbd0) : (comp2c940) : (lpf57810) : (gain5a460) : (rev42540) <: ((limd71e0)), ((gainc3770)) :> (compef5a0)
+(rev61750) <: ((compfec40)), ((comp7aaf0)) :> ((rev7acd0)), ((delb6670)) :> (comp14c20)
+(rev999d0) <: ((compf8880)), ((hpff3e20)) :> (lpf10a30) : (revca360) <: ((comp6f310)), ((hpf2f170)) :> _
+(rev2f1a0) <: ((compf8a50)), ((hpf113e0)) :> ((rev42d30)), ((limec8d0)) :> ((comp0e710)), ((hpf06380)) :> _
+(rev10230) : (comp449c0) <: ((rev44b40)), ((del5de40)) :> ((comp5e400)), ((lpf347b0)) :> _
+((rev88360)), ((hpfbc8d0)) :> (comp32770) <: ((rev42a00)), ((del87e40)) :> (compe2920)
+(comp11280) <: (((lim11b10))), (((comp67df0))) :> (revf7b80) : (compff000)
+(((dele2410))), (((rev86510) <: ((comp14570)), ((hpfc2a70)) :> _)) :> ((reve3530)), ((del88010)) :> ((comp52540)), ((hpf274d0)) :> _
+(revc26c0) : (comp241f0) : (rev6c100) <: ((comp38fa0)), ((hpf2ef50)) :> (rev0e9b0) <: ((compc96e0)), ((hpfa3e80)) :> _
+(lpff8780) : (gain75b90) : (revadf30) <: ((lim90f60)), ((gain6bef0)) :> (comp8b6f0) <: ((rev531f0)), ((delf9600)) :> (comp6c020)
+

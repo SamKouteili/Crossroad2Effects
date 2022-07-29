@@ -1,4 +1,4 @@
-from pedalboard import Pedalboard, Plugin, Chain, Mix
+from pedalboard import Pedalboard, Plugin, Chain, Mix, Compressor, Limiter
 import numpy as np
 from scipy.signal import stft
 from scipy.optimize import minimize
@@ -25,6 +25,16 @@ def calc_error(arr1 : np.ndarray, arr2 : np.ndarray, fs=2048) -> int:
 
     return mean_square_error + freq_err
 
+def get_bounds(params) :
+    bounds = []
+    for key in params :
+        if key == "ratio" and params.keys() == get_plg_args(Compressor()) :
+            bounds += [(1, 10)]
+        else :
+            if params[key] >= 1 : bounds += [(0, 2*params[key])]
+            else : bounds += [(0, 1)]
+    return bounds
+
 
 def get_param_error(argvals, argkeys, plg, board, input_buf, target_buf, samplerate) :
     """
@@ -45,7 +55,8 @@ def optimize_plg_params(plg : Plugin, board : Pedalboard, input_buf, target_buf,
     argkeys = list(params.keys())
     argvals = list(params.values())
 
-    bounds = [(0, 1) if v <= 1 else (0, 2*v) for v in params.values()]
+    # bounds = [(0, 1) if v <= 1 else (0, 2*v) for v in params.values()]
+    bounds = get_bounds(params)
 
     if params == [] : return board
 
@@ -57,7 +68,6 @@ def optimize_plg_params(plg : Plugin, board : Pedalboard, input_buf, target_buf,
     
     return board
 
-# def get_bounds(argkeys, argvals) 
 
 def optimize_board(board : Pedalboard, input_buf, target_buf, samplerate, tol=1.0e-5) :
     """
