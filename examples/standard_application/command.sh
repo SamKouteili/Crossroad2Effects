@@ -1,4 +1,4 @@
-python main.py -d --name=guitar_filt.dsp guitar.wav guitar_wet.wav
+python main.py -d --name guitar_filt.dsp guitar.wav guitar_wet.wav
 # RESET = 3 # Number of genetic resets
 # WEIGHTED = True # Choosing whether to weight surviving parents for reproduction probability
 # CALC_ERROR = False # Choosing method of testing equivalence between two models

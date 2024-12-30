@@ -4,9 +4,9 @@ import subprocess
 import argparse
 import librosa
 import matplotlib.pyplot as plt
-from plgUtil import *
-from genAlgo import *
-from faustGen import *
+from PluginUtil import *
+from GeneticAlgo import *
+from WriteFaust import *
 
 parser = argparse.ArgumentParser(description='CrossRoads2Effects: Your Filter Finder')
 

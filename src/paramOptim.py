@@ -2,7 +2,7 @@ from pedalboard import Pedalboard, Plugin, Chain, Mix, Compressor, Limiter
 import numpy as np
 from scipy.signal import stft
 from scipy.optimize import minimize
-from plgUtil import get_plg_args
+from PluginUtil import get_plg_args
 
 def calc_error(arr1 : np.ndarray, arr2 : np.ndarray, fs=2048) -> int:
     """
